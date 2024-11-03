@@ -10,12 +10,24 @@ with final.pkgs.lib; let
       version = src.lastModifiedDate;
     };
 
+  # Fetch plugin from Github
+  fromGitHub = rev: ref: repo:
+    pkgs.vimUtils.buildVimPlugin {
+      pname = "${pkgs.lib.strings.sanitizeDerivationName repo}";
+      version = ref;
+      src = builtins.fetchGit {
+        url = "https://github.com/${repo}.git";
+        ref = ref;
+        rev = rev;
+      };
+    };
+
   # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
   # otherwise it could have an incompatible signature when applying this overlay.
   pkgs-wrapNeovim = inputs.nixpkgs.legacyPackages.${pkgs.system};
 
   # This is the helper function that builds the Neovim derivation.
-  mkNeovim = pkgs.callPackage ./mkNeovim.nix { inherit pkgs-wrapNeovim; };
+  mkNeovim = pkgs.callPackage ./mkNeovim.nix {inherit pkgs-wrapNeovim;};
 
   # A plugin can either be a package or an attrset, such as
   # { plugin = <plugin>; # the package, e.g. pkgs.vimPlugins.nvim-cmp
@@ -26,67 +38,122 @@ with final.pkgs.lib; let
   #   ...
   # }
   all-plugins = with pkgs.vimPlugins; [
-    # plugins from nixpkgs go in here.
-    # https://search.nixos.org/packages?channel=unstable&from=0&size=50&sort=relevance&type=packages&query=vimPlugins
+    # Themes and fonts
+    kanagawa-nvim
+
+    # Autoformat and linting
+    conform-nvim
+    nvim-lint
+
+    # Treesitter
     nvim-treesitter.withAllGrammars
-    luasnip # snippets | https://github.com/l3mon4d3/luasnip/
-    # nvim-cmp (autocompletion) and extensions
-    nvim-cmp # https://github.com/hrsh7th/nvim-cmp
-    cmp_luasnip # snippets autocompletion extension for nvim-cmp | https://github.com/saadparwaiz1/cmp_luasnip/
-    lspkind-nvim # vscode-like LSP pictograms | https://github.com/onsails/lspkind.nvim/
-    cmp-nvim-lsp # LSP as completion source | https://github.com/hrsh7th/cmp-nvim-lsp/
-    cmp-nvim-lsp-signature-help # https://github.com/hrsh7th/cmp-nvim-lsp-signature-help/
-    cmp-buffer # current buffer as completion source | https://github.com/hrsh7th/cmp-buffer/
-    cmp-path # file paths as completion source | https://github.com/hrsh7th/cmp-path/
-    cmp-nvim-lua # neovim lua API as completion source | https://github.com/hrsh7th/cmp-nvim-lua/
-    cmp-cmdline # cmp command line suggestions
-    cmp-cmdline-history # cmp command line history suggestions
-    # ^ nvim-cmp extensions
-    # git integration plugins
-    diffview-nvim # https://github.com/sindrets/diffview.nvim/
-    neogit # https://github.com/TimUntersberger/neogit/
-    gitsigns-nvim # https://github.com/lewis6991/gitsigns.nvim/
-    vim-fugitive # https://github.com/tpope/vim-fugitive/
-    # ^ git integration plugins
-    # telescope and extensions
-    telescope-nvim # https://github.com/nvim-telescope/telescope.nvim/
-    telescope-fzy-native-nvim # https://github.com/nvim-telescope/telescope-fzy-native.nvim
-    # telescope-smart-history-nvim # https://github.com/nvim-telescope/telescope-smart-history.nvim
-    # ^ telescope and extensions
-    # UI
-    lualine-nvim # Status line | https://github.com/nvim-lualine/lualine.nvim/
-    nvim-navic # Add LSP location to lualine | https://github.com/SmiteshP/nvim-navic
-    statuscol-nvim # Status column | https://github.com/luukvbaal/statuscol.nvim/
-    nvim-treesitter-context # nvim-treesitter-context
-    # ^ UI
-    # language support
-    # ^ language support
-    # navigation/editing enhancement plugins
-    vim-unimpaired # predefined ] and [ navigation keymaps | https://github.com/tpope/vim-unimpaired/
-    eyeliner-nvim # Highlights unique characters for f/F and t/T motions | https://github.com/jinh0/eyeliner.nvim
-    nvim-surround # https://github.com/kylechui/nvim-surround/
-    nvim-treesitter-textobjects # https://github.com/nvim-treesitter/nvim-treesitter-textobjects/
-    nvim-ts-context-commentstring # https://github.com/joosepalviste/nvim-ts-context-commentstring/
-    # ^ navigation/editing enhancement plugins
-    # Useful utilities
-    nvim-unception # Prevent nested neovim sessions | nvim-unception
-    # ^ Useful utilities
-    # libraries that other plugins depend on
-    sqlite-lua
+
+    # LSP dependencies
+    nvim-lspconfig
+
+    # Quarto and helpers
+    quarto-nvim
+    otter-nvim
+    nabla-nvim
+    headlines-nvim
+    vim-slime
+
+    # R plugin
+    (fromGitHub "ad7035e574677fa9bc339aaf7b38c317ffc0fd3b" "main" "R-nvim/R.nvim")
+
+    # Dependencies
+    lspkind-nvim
     plenary-nvim
+
+    # UI
+    alpha-nvim
     nvim-web-devicons
-    vim-repeat
-    # ^ libraries that other plugins depend on
-    # bleeding-edge plugins from flake inputs
-    # (mkNvimPlugin inputs.wf-nvim "wf.nvim") # (example) keymap hints | https://github.com/Cassin01/wf.nvim
-    # ^ bleeding-edge plugins from flake inputs
     which-key-nvim
+    gitsigns-nvim
+
+    # Editing
+    comment-nvim # Commenting plugin (./plugins/editing/editing.lua)
+    todo-comments-nvim # highlight and search for todo comments like TODO, HACK, BUG in your code base
+    indent-blankline-nvim
+    nvim-surround # Improved support for surround selection
+    eyeliner-nvim # Highlights unique characters for f/F and t/T motions | https://github.com/jinh0/eyeliner.nvim
+    vim-illuminate
+    indent-blankline-nvim
+
+    # Not sure which category
+    mini-nvim # Swiss army knife
+
+    # Telescope
+    telescope-nvim
+    telescope-fzf-native-nvim
+    telescope-ui-select-nvim
+
+    # Completions engines (cmp)
+    nvim-autopairs
+    luasnip
+    cmp-nvim-lsp
+    cmp-buffer
+    cmp-calc
+    cmp-emoji
+    cmp-latex-symbols
+    cmp-nvim-lsp-signature-help
+    cmp-pandoc-references
+    cmp-path
+    cmp-spell
+    cmp-treesitter
+    cmp-nvim-lua
+    cmp_luasnip
+    cmp-cmdline
+    cmp-cmdline-history
+    (fromGitHub "18b88eeb7e47996623b9aa0a763677ac00a16221" "main" "R-nvim/cmp-r") # cmp-r
   ];
 
   extraPackages = with pkgs; [
+    R
+    rPackages.beepr
+    rPackages.quarto
+
+    # Utilities (primarly for R.nvim)
+    gcc
+    gnumake
+
+    # PDF viewer
+    zathura
+
     # language servers, etc.
+
+    # > Lua
     lua-language-server
-    nil # nix LSP
+    stylua
+
+    # > Nix
+    nil
+    alejandra
+
+    # Markdown
+    marksman
+    vale
+
+    # Javascript
+    javascript-typescript-langserver
+    prettierd
+
+    # YAML
+    yaml-language-server
+
+    # Python
+    pyright
+    black
+    isort
+
+    # Rust
+    rust-analyzer
+
+    # JSON/CSS/HTML
+    vscode-langservers-extracted
+
+    # Quarto
+    quarto
   ];
 in {
   # This is the neovim derivation

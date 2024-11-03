@@ -1,104 +1,101 @@
-local cmd = vim.cmd
-local fn = vim.fn
-local opt = vim.o
-local g = vim.g
+-- Set <space> as the leader key
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
--- <leader> key. Defaults to `\`. Some people prefer space.
--- g.mapleader = ' '
--- g.maplocalleader = ' '
+-- Disable Vim's default file explorer in order to use nvim-tree
+-- vim.g.loaded_netrw = 1
+-- vim.g.load_netrwPlugin = 1
 
-opt.compatible = false
+-- Set to true if you have a Nerd Font installed and selected in the terminal
+vim.g.have_nerd_font = true
 
--- Enable true colour support
-if fn.has('termguicolors') then
-  opt.termguicolors = true
-end
+-- [[ Setting options ]]
 
--- See :h <option> to see what the options do
+-- Make line numbers default
+vim.opt.number = true
+vim.opt.relativenumber = true -- relative number
 
--- Search down into subfolders
-opt.path = vim.o.path .. '**'
+-- Enable mouse mode, can be useful
+vim.opt.mouse = "a"
 
-opt.number = true
-opt.relativenumber = true
-opt.cursorline = true
-opt.lazyredraw = true
-opt.showmatch = true -- Highlight matching parentheses, etc
-opt.incsearch = true
-opt.hlsearch = true
+-- Don't show the mode, since it's already in the status line
+vim.opt.showmode = false
 
-opt.spell = true
-opt.spelllang = 'en'
+-- Sync clipboard between OS and Neovim
+-- Schedule the setting after 'UiEnter' because it can increase startup time
+vim.schedule(function()
+	vim.opt.clipboard = "unnamedplus"
+end)
 
-opt.expandtab = true
-opt.tabstop = 2
-opt.softtabstop = 2
-opt.shiftwidth = 2
-opt.foldenable = true
-opt.history = 2000
-opt.nrformats = 'bin,hex' -- 'octal'
-opt.undofile = true
-opt.splitright = true
-opt.splitbelow = true
-opt.cmdheight = 0
+-- Enable break indent
+vim.opt.breakindent = true
 
-opt.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+-- Save undo history
+vim.opt.undofile = true
 
--- Configure Neovim diagnostic messages
+-- Case-insensitive search UNLESS \C or one or more capital letters in the search term
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
 
-local function prefix_diagnostic(prefix, diagnostic)
-  return string.format(prefix .. ' %s', diagnostic.message)
-end
+-- Keep signcolumn on by default
+vim.opt.signcolumn = "yes"
 
-vim.diagnostic.config {
-  virtual_text = {
-    prefix = '',
-    format = function(diagnostic)
-      local severity = diagnostic.severity
-      if severity == vim.diagnostic.severity.ERROR then
-        return prefix_diagnostic('󰅚', diagnostic)
-      end
-      if severity == vim.diagnostic.severity.WARN then
-        return prefix_diagnostic('⚠', diagnostic)
-      end
-      if severity == vim.diagnostic.severity.INFO then
-        return prefix_diagnostic('ⓘ', diagnostic)
-      end
-      if severity == vim.diagnostic.severity.HINT then
-        return prefix_diagnostic('󰌶', diagnostic)
-      end
-      return prefix_diagnostic('■', diagnostic)
-    end,
-  },
-  signs = {
-    text = {
-      -- Requires Nerd fonts
-      [vim.diagnostic.severity.ERROR] = '󰅚',
-      [vim.diagnostic.severity.WARN] = '⚠',
-      [vim.diagnostic.severity.INFO] = 'ⓘ',
-      [vim.diagnostic.severity.HINT] = '󰌶',
-    },
-  },
-  update_in_insert = false,
-  underline = true,
-  severity_sort = true,
-  float = {
-    focusable = false,
-    style = 'minimal',
-    border = 'rounded',
-    source = 'if_many',
-    header = '',
-    prefix = '',
-  },
-}
+-- Decrease update time
+vim.opt.updatetime = 250
 
-g.editorconfig = true
+-- Decrease mapped sequence wait time
+-- Display which-key popup sooner
+vim.opt.timeoutlen = 300
 
-vim.opt.colorcolumn = '100'
+-- Configure how new splits should be opened
+vim.opt.splitright = true
+vim.opt.splitbelow = true
 
--- Native plugins
-cmd.filetype('plugin', 'indent', 'on')
-cmd.packadd('cfilter') -- Allows filtering the quickfix list with :cfdo
+-- Sets how neovim will display certain whitespace characters in the editor
+vim.opt.list = true
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
--- let sqlite.lua (which some plugins depend on) know where to find sqlite
-vim.g.sqlite_clib_path = require('luv').os_getenv('LIBSQLITE')
+-- Preview substitutions live, as you type!
+vim.opt.inccommand = "split"
+
+-- Show which line your cursor is on
+vim.opt.cursorline = true
+
+-- Minimal number of screen lines to keep above and below the cursor
+vim.opt.scrolloff = 10
+
+-- [[ Basic keymaps ]]
+
+-- Clear highlights on search when pressing <Esc> in normal mode
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+
+-- Diagnostic keymaps
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+
+-- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
+-- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
+-- is not what someone will guess without a bit more experience.
+--
+-- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
+-- or just use <C-\><C-n> to exit terminal mode
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
+-- Keybinds to make split navigation easier.
+--  Use CTRL+<hjkl> to switch between windows
+--
+--  See `:help wincmd` for a list of all window commands
+vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
+vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
+vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
+-- [[ Basic Autocommands ]]
+
+-- Highlight when yanking (copying) text
+vim.api.nvim_create_autocmd("TextYankPost", {
+	desc = "Highlight when yanking (copying) text",
+	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+	callback = function()
+		vim.highlight.on_yank()
+	end,
+})

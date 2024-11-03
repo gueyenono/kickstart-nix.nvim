@@ -21,17 +21,16 @@
     gen-luarc,
     ...
   }: let
-    supportedSystems = [
-      "x86_64-linux"
-      "aarch64-linux"
-      "x86_64-darwin"
-      "aarch64-darwin"
-    ];
-
+    # supportedSystems = [
+    #   "x86_64-linux"
+    #   "aarch64-linux"
+    #   "x86_64-darwin"
+    #   "aarch64-darwin"
+    # ];
     # This is where the Neovim derivation is built.
     neovim-overlay = import ./nix/neovim-overlay.nix {inherit inputs;};
   in
-    flake-utils.lib.eachSystem supportedSystems (system: let
+    flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
@@ -46,11 +45,54 @@
       shell = pkgs.mkShell {
         name = "nvim-devShell";
         buildInputs = with pkgs; [
-          # Tools for Lua and Nix development, useful for editing files in this repo
+          R
+          rPackages.beepr
+          rPackages.quarto
+          rPackages.rvest
+
+          # Utilities (primarly for R.nvim)
+          gcc
+          gnumake
+
+          cowsay
+          # PDF viewer
+          zathura
+
+          # language servers, etc.
+
+          # > Lua
           lua-language-server
-          nil
           stylua
           luajitPackages.luacheck
+
+          # > Nix
+          nil
+          alejandra
+
+          # Markdown
+          marksman
+          vale
+
+          # Javascript
+          javascript-typescript-langserver
+          prettierd
+
+          # YAML
+          yaml-language-server
+
+          # Python
+          pyright
+          black
+          isort
+
+          # Rust
+          rust-analyzer
+
+          # JSON/CSS/HTML
+          vscode-langservers-extracted
+
+          # Quarto
+          quarto
         ];
         shellHook = ''
           # symlink the .luarc.json generated in the overlay
