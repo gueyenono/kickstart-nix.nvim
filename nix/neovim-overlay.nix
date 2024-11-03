@@ -109,9 +109,9 @@ with final.pkgs.lib; let
   ];
 
   extraPackages = with pkgs; [
-    R
-    rPackages.beepr
-    rPackages.quarto
+    # R
+    # rPackages.beepr
+    # rPackages.quarto
 
     # Utilities (primarly for R.nvim)
     gcc

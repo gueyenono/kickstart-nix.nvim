@@ -21,12 +21,6 @@
     gen-luarc,
     ...
   }: let
-    # supportedSystems = [
-    #   "x86_64-linux"
-    #   "aarch64-linux"
-    #   "x86_64-darwin"
-    #   "aarch64-darwin"
-    # ];
     # This is where the Neovim derivation is built.
     neovim-overlay = import ./nix/neovim-overlay.nix {inherit inputs;};
   in
@@ -45,6 +39,7 @@
       shell = pkgs.mkShell {
         name = "nvim-devShell";
         buildInputs = with pkgs; [
+          # R and packages
           R
           rPackages.beepr
           rPackages.quarto
