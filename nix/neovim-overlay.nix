@@ -109,10 +109,6 @@ with final.pkgs.lib; let
   ];
 
   extraPackages = with pkgs; [
-    # R
-    # rPackages.beepr
-    # rPackages.quarto
-
     # Utilities (primarly for R.nvim)
     gcc
     gnumake
@@ -125,6 +121,7 @@ with final.pkgs.lib; let
     # > Lua
     lua-language-server
     stylua
+    luajitPackages.luacheck
 
     # > Nix
     nil

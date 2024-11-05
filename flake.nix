@@ -45,49 +45,8 @@
           rPackages.quarto
           rPackages.rvest
 
-          # Utilities (primarly for R.nvim)
-          gcc
-          gnumake
-
-          cowsay
-          # PDF viewer
-          zathura
-
-          # language servers, etc.
-
-          # > Lua
-          lua-language-server
-          stylua
-          luajitPackages.luacheck
-
-          # > Nix
-          nil
-          alejandra
-
-          # Markdown
-          marksman
-          vale
-
-          # Javascript
-          javascript-typescript-langserver
-          prettierd
-
-          # YAML
-          yaml-language-server
-
-          # Python
-          pyright
-          black
-          isort
-
-          # Rust
-          rust-analyzer
-
-          # JSON/CSS/HTML
-          vscode-langservers-extracted
-
-          # Quarto
-          quarto
+          # Neovim configuration
+          nvim-pkg
         ];
         shellHook = ''
           # symlink the .luarc.json generated in the overlay
