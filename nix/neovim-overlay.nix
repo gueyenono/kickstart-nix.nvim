@@ -151,6 +151,9 @@ with final.pkgs.lib; let
 
     # Quarto
     quarto
+
+    # Tex distribution
+    texliveSmall
   ];
 in {
   # This is the neovim derivation
