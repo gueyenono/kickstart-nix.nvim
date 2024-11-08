@@ -2,6 +2,12 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Set tabstop and shiftwidth
+vim.opt.tabstop = 4      -- Number of spaces a tab character represents
+vim.opt.shiftwidth = 4   -- Number of spaces to use for each step of (auto)indentation
+vim.opt.softtabstop = 4  -- Number of spaces per tab when editing (for 'insert mode' indentation)
+vim.opt.expandtab = true -- Use spaces instead of tabs
+
 -- Disable Vim's default file explorer in order to use nvim-tree
 -- vim.g.loaded_netrw = 1
 -- vim.g.load_netrwPlugin = 1
@@ -20,6 +26,9 @@ vim.opt.mouse = "a"
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
+
+-- vim-slime
+vim.g.slime_target = "neovim"
 
 -- Sync clipboard between OS and Neovim
 -- Schedule the setting after 'UiEnter' because it can increase startup time

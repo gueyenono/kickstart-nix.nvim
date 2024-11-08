@@ -1,7 +1,7 @@
 require('lint').linters_by_ft = {
   -- r = { "rPackages.styler" },
-  lua = { 'stylua' },
-  -- nix = { "alejandra" },
+  lua = { 'luacheck' },
+  -- nix = { 'alejandra' },
   python = { 'isort', 'black' },
   javascript = { 'prettierd', stop_after_first = true },
   markdown = { 'vale' },

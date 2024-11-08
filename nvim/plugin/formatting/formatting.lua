@@ -17,7 +17,7 @@ require('conform').setup {
   formatters_by_ft = {
     -- r = { "rPackages.styler" },
     markdown = { 'vale' },
-    lua = { 'stylua' },
+    lua = { 'luacheck' },
     nix = { 'alejandra' },
     python = { 'isort', 'black' },
     javascript = { 'prettierd', stop_after_first = true },
