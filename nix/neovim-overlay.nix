@@ -72,6 +72,7 @@ with final.pkgs.lib; let
     gitsigns-nvim
 
     # Editing
+    vim-sleuth
     comment-nvim # Commenting plugin (./plugins/editing/editing.lua)
     todo-comments-nvim # highlight and search for todo comments like TODO, HACK, BUG in your code base
     indent-blankline-nvim
